@@ -66,3 +66,14 @@ class Transformacje:
             N = self.a / sqrt(1 - self.e2 * (sin(fi))**2)
             h = r / cos(fi) - N     
             return degrees(fi), degrees(la), h
+        
+# wywołanie funkcji trasformacja1 - przykład na jednym punkcie żeby sprawdzić poprawność kodu
+if __name__ == "__main__":
+    # utworzenie obiektu
+    geo = Transformacje(model = "wgs84")
+    # dane XYZ geocentryczne
+    X = 3664940.500; Y = 1409153.590; Z = 5009571.170
+    fi, la, h = geo.transformacja1(X, Y, Z)
+    print(fi, la, h)
+    # phi, lam, h = geo.xyz2plh2(X, Y, Z)
+    # print(phi, lam, h)
