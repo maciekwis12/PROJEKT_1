@@ -29,4 +29,40 @@ class Transformacje:
         self.e = sqrt(2 * self.flat - self.flat ** 2) # eccentricity
         self.e2 = (2 * self.flat - self.flat ** 2) # eccentricity**2
 
-    
+    def transformacja1(self, X, Y, Z):
+            """
+            Algorytm Hirvonena – algorytm służący do transformacji współrzędnych ortokartezjańskich 
+            (prostokątnych) x, y, z na współrzędne geodezyjne B, L, h. Jest to proces iteracyjny. 
+            W wyniku 3-4-krotnego powtarzania procedury można przeliczyć współrzędne n
+            a poziomie dokładności 1 cm
+            Parameters
+            ----------
+            X, Y, Z : FLOAT
+                 współrzędne w układzie orto-kartezjańskim, 
+
+            Returns
+            -------
+            fi : FLOAT
+                [stopnie dziesiętne] - szerokość geodezyjna
+            la : FLOAT
+                [stopnie dziesiętne] - długośc geodezyjna.
+            h : FLOAT
+                [metry] - wysokość elipsoidalna
+            output [STR] - optional, defaulf 
+                dec_degree - decimal degree
+                dms - degree, minutes, sec
+
+            """
+            r = sqrt(X**2 + Y**2) # promień
+            fi = atan(Z/(r*(1 - self.e2))) # pierwsze przybliżenie fi
+            while True:
+                N = self.a / sqrt(1 - self.e2 * sin(fi)**2)
+                h = (r/cos(fi)) - N
+                fp = fi
+                fi = atan(Z/(r *(1-(self.e2*(N/(N+h))))))
+                if abs(fp-fi) < (0.000001/206265):
+                    break 
+            la = atan2(Y,X)
+            N = self.a / sqrt(1 - self.e2 * (sin(fi))**2)
+            h = r / cos(fi) - N     
+            return degrees(fi), degrees(la), h
