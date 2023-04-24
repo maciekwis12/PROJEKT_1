@@ -63,17 +63,43 @@ class Transformacje:
                 if abs(fp-fi) < (0.000001/206265):
                     break 
             la = atan2(Y,X)
-            N = self.a / sqrt(1 - self.e2 * (sin(fi))**2)
-            h = r / cos(fi) - N     
             return degrees(fi), degrees(la), h
         
-# wywołanie funkcji trasformacja1 - przykład na jednym punkcie żeby sprawdzić poprawność kodu
+# Tutaj będą wywoływane funkcje oraz odczytywane i zapisywane pliki tekstowe:
 if __name__ == "__main__":
-    # utworzenie obiektu
+    
+    # Utworzenie obiektu
     geo = Transformacje(model = "wgs84")
-    # dane XYZ geocentryczne
-    X = 3664940.500; Y = 1409153.590; Z = 5009571.170
-    fi, la, h = geo.transformacja1(X, Y, Z)
-    print(fi, la, h)
-    # phi, lam, h = geo.xyz2plh2(X, Y, Z)
-    # print(phi, lam, h)
+    #geo = Transformacje(model = "grs80")
+    print('Transformacje do wyboru: \n XYZ -> BLH (1) \n BLH -> XYZ (2)')
+    print('Wpisz numerek w nawiasie aby wykonać obliczenia dla odpowiedniej transformacji')
+    
+    wybrana_transformacja = input() 
+    
+    if wybrana_transformacja == '1':
+        # Dane XYZ z pliku tekstowego
+        with open('input_xyz.txt', 'r') as plik:
+            wiersze = plik.readlines()
+            punkty = [] # [[X1, Y1, Z1], ..., [Xn, Yn, Zn]]
+            for i in range(0, len(wiersze)):
+                wspolrzedne_punkt = wiersze[i].split(',')
+                for xyz in range(0, len(wspolrzedne_punkt)):
+                    wspolrzedne_punkt[xyz] = float(wspolrzedne_punkt[xyz])
+                punkty.append(wspolrzedne_punkt)
+                
+        # Przerzucenie wyników do listy flh
+        flh = []
+        for punkt in range(0,len(punkty)):
+            fi, la, h = geo.transformacja1(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
+            flh.append([fi,la,h])
+        
+        # Zapisanie wyników do pliku tekstowego
+        with open('output_flh.txt', 'w') as plik:
+            plik.write('Wyniki przedstawione w formacie: [fi, la, h] \n')
+            for punkt in range(0, len(flh)):
+                plik.write(f'{flh[punkt]} \n')
+
+    if wybrana_transformacja == '2':
+        # Kod dla transformacji2
+        pass
+    
