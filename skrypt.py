@@ -5,7 +5,7 @@ Created on Wed Apr 19 17:15:28 2023
 @author: Lenovo
 """
 
-from math import sqrt, sin, cos, atan, atan2, degrees
+from math import sqrt, sin, cos, atan, atan2, degrees, radians
 
 
 class Transformacje:
@@ -65,13 +65,50 @@ class Transformacje:
             la = atan2(Y,X)
             return degrees(fi), degrees(la), h
         
+    def transformacja2(self, fi, la, h):
+        """
+        Zadanie odwrotne do algorytmu Hirvonena. 
+        Przeliczenie z układu geodezyjnego BLH do układu ortokartezjańskiego XYZ.
+        Parameters
+        ----------
+        fi, la, h : FLOAT
+             współrzędne w układzie geodezyjnym BLH, 
+
+        Returns
+        -------
+        X : FLOAT
+            [metry]
+        Y : FLOAT
+            [metry]
+        Z : FLOAT
+            [metry]
+        output [STR] 
+
+        """
+        fi = radians(fi)
+        la = radians(la)
+        N = self.a / sqrt(1 - self.e2 * sin(fi)**2)
+        X = (N+h)*cos(fi)*cos(la)
+        Y = (N+h)*cos(fi)*sin(la)
+        Z = (N*(1-self.e2)+h)*sin(fi)
+        return(X,Y,Z)
+        
 # Tutaj będą wywoływane funkcje oraz odczytywane i zapisywane pliki tekstowe:
 if __name__ == "__main__":
     
     # Utworzenie obiektu
-    geo = Transformacje(model = "wgs84")
-    #geo = Transformacje(model = "grs80")
-    print('Transformacje do wyboru: \n XYZ -> BLH (1) \n BLH -> XYZ (2)')
+    print('Elipsoidy do wyboru: \nwgs84 (1)\ngrs80 (2)')
+    print('Wybierz numerek w nawiasie aby wykonać obliczenia dla odpowiedniej elipsoidy')
+    wybrana_elips = input()
+    if wybrana_elips == '1':
+        geo = Transformacje(model = "wgs84")
+    elif wybrana_elips == '2':
+        geo = Transformacje(model = "grs80")
+    else:
+        print('Obsługiwane elipsoidy: wgs84 oraz grs80')
+    
+    
+    print('Transformacje do wyboru: \n XYZ -> BLH (1) \n BLH -> XYZ (2) \n XYZ -> NEUp (3) \n BL -> 2000 (4) \n BL -> 1992 (5) \n')
     print('Wpisz numerek w nawiasie aby wykonać obliczenia dla odpowiedniej transformacji')
     
     wybrana_transformacja = input() 
@@ -99,7 +136,38 @@ if __name__ == "__main__":
             for punkt in range(0, len(flh)):
                 plik.write(f'{flh[punkt]} \n')
 
-    if wybrana_transformacja == '2':
-        # Kod dla transformacji2
+    elif wybrana_transformacja == '2':
+        # Dane XYZ z pliku tekstowego
+        with open('input_blh.txt', 'r') as plik:
+            wiersze = plik.readlines()
+            punkty = [] # [[B1, L1, H1], ..., [Bn, Ln, Hn]]
+            for i in range(0, len(wiersze)):
+                wspolrzedne_punkt = wiersze[i].split(',')
+                for blh in range(0, len(wspolrzedne_punkt)):
+                    wspolrzedne_punkt[blh] = float(wspolrzedne_punkt[blh])
+                punkty.append(wspolrzedne_punkt)
+                
+        # Przerzucenie wyników do listy xyz
+        xyz = []
+        for punkt in range(0,len(punkty)):
+            x, y, z = geo.transformacja2(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
+            xyz.append([x,y,z])
+        
+        # Zapisanie wyników do pliku tekstowego
+        with open('output_xyz.txt', 'w') as plik:
+            plik.write('Wyniki przedstawione w formacie: [X, Y, Z] \n')
+            for punkt in range(0, len(xyz)):
+                plik.write(f'{xyz[punkt]} \n')
+    
+    elif wybrana_transformacja == '3':
+        # Kod dla transformacji3
+        pass
+    
+    elif wybrana_transformacja == '4':
+        # Kod dla transformacji4
+        pass
+    
+    elif wybrana_transformacja == '5':
+        # Kod dla transformacji5
         pass
     
