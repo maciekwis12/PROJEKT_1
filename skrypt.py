@@ -7,7 +7,7 @@ Created on Wed Apr 19 17:15:28 2023
 
 from math import sqrt, sin, cos, atan, atan2, degrees, radians
 
-
+xxx
 class Transformacje:
     def __init__(self, model: str = 'wgs84'):
         """
