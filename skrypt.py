@@ -121,28 +121,19 @@ class Transformacje:
             fi_a = arctan(Za/(r *(1-(self.e2*(N/(N+h))))))
             if abs(fp-fi) < (0.000001/206265):
                 break 
-            la_a = atan2(Ya,Xa)
-        r = sqrt(Xb**2 + Yb**2) 
-        fi_b = arctan(Zb/(r*(1 - self.e2)))
-        while True:
-            N = self.a / sqrt(1 - self.e2 * sin(fi_b)**2)
-            h = (r/cos(fi_b)) - N
-            fp = fi_b
-            fi_b = arctan(Zb/(r *(1-(self.e2*(N/(N+h))))))
-            if abs(fp-fi_b) < (0.000001/206265):
-                break 
-            la_b = atan2(Yb,Xb)
-            R = array([[-sin(fi_a)*cos(la_a), -sin(la_a), cos(fi_a)*cos(la_a)], 
+        la_a = atan2(Ya,Xa)
+        
+        R = array([[-sin(fi_a)*cos(la_a), -sin(la_a), cos(fi_a)*cos(la_a)], 
                  [-sin(fi_a)*sin(la_a), cos(la_a), cos(fi_a)*sin(la_a)],
                  [ cos(fi_a), 0, sin(fi_a)]])
-            dX = array([[Xb-Xa],
+        dX = array([[Xb-Xa],
                            [Yb-Ya],
                            [Zb-Za]])
-            dneu = transpose(R)@dX
-            sab = sqrt(dneu[0]**2 + dneu[1]**2 + dneu[2]**2)
-            alfaab = arctan2(dneu[1],dneu[0])
-            zab = arccos(dneu[2]/sab)
-            return(sab,degrees(alfaab),degrees(zab))
+        dneu = transpose(R)@dX
+        sab = sqrt(dneu[0]**2 + dneu[1]**2 + dneu[2]**2)
+        alfaab = arctan2(dneu[1],dneu[0])
+        zab = arccos(dneu[2]/sab)
+        return(sab,degrees(alfaab),degrees(zab))
         
     def transformacja4(self,fi,la,L0):
         """
@@ -165,18 +156,19 @@ class Transformacje:
             [metry] - druga współrzędna
         
         """
-        fi = fi*pi/180
-        la = la*pi/180
-        L0 = L0*pi/180
-        b2 = (self.a**2)*(1-self.ecc2)
-        e2 = (self.a**2 - b2)/b2
-        t = arctan(fi)
-        n2 = e2 * ((cos(fi))**2)
-        dl = la - L0
-        N = self.a / sqrt(1 - self.e2 * sin(fi)**2)
-        si = sigma(fi,self.a,self.ecc2)
-        xgk = si + (((dl)**2)/2) *N*sin(fi)*cos(fi)*(1+(((dl)**2)/12)*(cos(fi))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(cos(fi))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
-        ygk = dl*N*cos(fi) * (1+((dl**2)/6) * (cos(fi))**2 *(1-t**2+n2) + ((dl**4)/120) * (cos(fi))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
+        b2 = (self.a**2)*(1-self.e2)
+        ep2 = (a**2 - b2)/b2
+        t = np.tan(f)
+        n2 = ep2 * ((np.cos(f))**2)
+        dl = l - L0
+        N = self.a/np.sqrt(1 - (self.e2*(np.sin(f)**2)))
+        A0 = 1-(self.e2/4)-((3*self.e2**2)/64)-((5*self.e2**3)/256)
+        A2 = (3/8) * (self.e2 +((self.e2**2)/4) + ((15*(self.e2**3))/128))
+        A4 = (15/256) *(self.e2**2 +((3*(self.e2**3))/4))
+        A6 = (35*(self.e2**3))/3072
+        si = a*((A0*f)-(A2*np.sin(2*f))+(A4*np.sin(4*f))-(A6*np.sin(6*f)))
+        xgk = si + (((dl)**2)/2) *N*np.sin(f)*np.cos(f)*(1+(((dl)**2)/12)*(np.cos(f))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(np.cos(f))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
+        ygk = dl*N*np.cos(f) * (1+((dl**2)/6) * (np.cos(f))**2 *(1-t**2+n2) + ((dl**4)/120) * (np.cos(f))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
         x2000 = xgk*0.999923
         y2000 = ygk*0.999923 + (rad2deg(L0)/3)*1000000 + 500000
         return(x2000,y2000)
@@ -202,18 +194,19 @@ class Transformacje:
             [metry] - druga współrzędna
 
         """
-        fi = fi*pi/180
-        la = la*pi/180
-        L0 = 19*pi/180
-        b2 = (self.a**2)*(1-self.ecc2)
-        e2 = (self.a**2 - b2)/b2
-        t = arctan(fi)
-        n2 = e2 * ((cos(fi))**2)
-        dl = la - L0
-        N = self.a / sqrt(1 - self.e2 * sin(fi)**2)
-        si = sigma(fi,self.a,self.ecc2)
-        xgk = si + (((dl)**2)/2) *N*sin(fi)*cos(fi)*(1+(((dl)**2)/12)*(cos(fi))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(cos(fi))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
-        ygk = dl*N*cos(fi) * (1+((dl**2)/6) * (cos(fi))**2 *(1-t**2+n2) + ((dl**4)/120) * (cos(fi))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
+        b2 = (self.a**2)*(1-self.e2)
+        ep2 = (a**2 - b2)/b2
+        t = np.tan(f)
+        n2 = ep2 * ((np.cos(f))**2)
+        dl = l - L0
+        N = self.a/np.sqrt(1 - (self.e2*(np.sin(f)**2)))
+        A0 = 1-(self.e2/4)-((3*self.e2**2)/64)-((5*self.e2**3)/256)
+        A2 = (3/8) * (self.e2 +((self.e2**2)/4) + ((15*(self.e2**3))/128))
+        A4 = (15/256) *(self.e2**2 +((3*(self.e2**3))/4))
+        A6 = (35*(self.e2**3))/3072
+        si = a*((A0*f)-(A2*np.sin(2*f))+(A4*np.sin(4*f))-(A6*np.sin(6*f)))
+        xgk = si + (((dl)**2)/2) *N*np.sin(f)*np.cos(f)*(1+(((dl)**2)/12)*(np.cos(f))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(np.cos(f))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
+        ygk = dl*N*np.cos(f) * (1+((dl**2)/6) * (np.cos(f))**2 *(1-t**2+n2) + ((dl**4)/120) * (np.cos(f))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
         x1992 = xgk*0.9993 - 5300000
         y1992 = ygk*0.9993 + 500000
         return(x1992,y1992)
