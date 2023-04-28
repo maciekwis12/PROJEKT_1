@@ -62,6 +62,3 @@ Zdecydowaliśmy się na takie uproszczenie, ze względu na estetykę kodu - wygl
 Program odczytuje pliki tekstowe z katalogu z zainstalowanym Pythonem. Nie wpływa to w żaden sposób na wyniki obliczeń, 
 lecz idealnie byłoby, aby użytkownik mógł wpisać ścieżkę dostępu oraz nazwę pliku tesktowego, w którym przechowuje współrzędne. W tym przypadku, motywacją była jedynie oszczędność czasu.
 
-13 Ponowne wykonanie programu
-Program wyłącza się po wykonaniu jednej transformacji. Zawarcie danej części kodu w pętli while umożliwiłoby wykonywanie wielu obliczeń bez konieczności uruchamiania programu od początku. 
-Prawdopodobnie dołączymy jednak tę funkcjonalność, ponieważ można to poprawić dosyć prostym zabiegiem.
