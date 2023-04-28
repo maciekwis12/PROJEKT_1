@@ -5,8 +5,8 @@ Created on Wed Apr 19 17:15:28 2023
 @author: Lenovo
 """
 
-from math import sqrt, sin, cos, atan, atan2, degrees, radians
-import numpy as np
+from math import sqrt, sin, cos, atan, atan2, degrees, radians, pi
+from numpy import rad2deg, arctan2, arctan, array, transpose, arccos
 
 class Transformacje:
     def __init__(self, model: str = 'wgs84'):
@@ -92,7 +92,59 @@ class Transformacje:
         Y = (N+h)*cos(fi)*sin(la)
         Z = (N*(1-self.e2)+h)*sin(fi)
         return(X,Y,Z)
-    def transformacja3(self,fi,la,L0):
+    
+    def transformacja3(self,Xa,Ya,Za,Xb,Yb,Zb):
+        """
+        Transformacja współrzędnych kartezjańskich na parametry wektora przestrzennego w układzie
+        topocentrycznym.
+        Parameters
+        ----------
+        Xa,Ya,Za,Xb,Yb,Zb : FLOAT
+            początkowe(a) i końcowe(b) współrzędne kartezjańkie wektora przestrzennego
+        Returns
+        ----------
+        sab : FLOAT
+            [metry]
+        alfaab : FLOAT
+            [stopnie dziesiętne]
+        zab: FLOAT
+            [stopnie dziesiętne]
+        
+        
+        """
+        r = sqrt(Xa**2 + Ya**2) 
+        fi_a = arctan(Za/(r*(1 - self.e2))) 
+        while True:
+            N = self.a / sqrt(1 - self.e2 * sin(fi_a)**2)
+            h = (r/cos(fi_a)) - N
+            fp = fi_a
+            fi_a = arctan(Za/(r *(1-(self.e2*(N/(N+h))))))
+            if abs(fp-fi) < (0.000001/206265):
+                break 
+            la_a = atan2(Ya,Xa)
+        r = sqrt(Xb**2 + Yb**2) 
+        fi_b = arctan(Zb/(r*(1 - self.e2)))
+        while True:
+            N = self.a / sqrt(1 - self.e2 * sin(fi_b)**2)
+            h = (r/cos(fi_b)) - N
+            fp = fi_b
+            fi_b = arctan(Zb/(r *(1-(self.e2*(N/(N+h))))))
+            if abs(fp-fi_b) < (0.000001/206265):
+                break 
+            la_b = atan2(Yb,Xb)
+            R = array([[-sin(fi_a)*cos(la_a), -sin(la_a), cos(fi_a)*cos(la_a)], 
+                 [-sin(fi_a)*sin(la_a), cos(la_a), cos(fi_a)*sin(la_a)],
+                 [ cos(fi_a), 0, sin(fi_a)]])
+            dX = array([[Xb-Xa],
+                           [Yb-Ya],
+                           [Zb-Za]])
+            dneu = transpose(R)@dX
+            sab = sqrt(dneu[0]**2 + dneu[1]**2 + dneu[2]**2)
+            alfaab = arctan2(dneu[1],dneu[0])
+            zab = arccos(dneu[2]/sab)
+            return(sab,degrees(alfaab),degrees(zab))
+        
+    def transformacja4(self,fi,la,L0):
         """
         Transformacja współrzędnych do układu 2000 - transformacja stosowana na potrzeby wykonania map w skalach większych
         od 1:10 000. Odwzorowanie oparte na na odwzorowaniu Gaussa-Krugera w czterech trzystopniowych strefach południkowych
@@ -118,27 +170,28 @@ class Transformacje:
         L0 = L0*pi/180
         b2 = (self.a**2)*(1-self.ecc2)
         e2 = (self.a**2 - b2)/b2
-        t = np.arctan(f)
-        n2 = e2 * ((np.cos(f))**2)
-        dl = l - L0
-        N = self.a / np.sqrt(1 - self.e2 * np.sin(fi)**2)
-        si = sigma(f,self.a,self.ecc2)
-        xgk = si + (((dl)**2)/2) *N*np.sin(f)*np.cos(f)*(1+(((dl)**2)/12)*(np.cos(f))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(np.cos(f))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
-        ygk = dl*N*np.cos(f) * (1+((dl**2)/6) * (np.cos(f))**2 *(1-t**2+n2) + ((dl**4)/120) * (np.cos(f))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
+        t = arctan(fi)
+        n2 = e2 * ((cos(fi))**2)
+        dl = la - L0
+        N = self.a / sqrt(1 - self.e2 * sin(fi)**2)
+        si = sigma(fi,self.a,self.ecc2)
+        xgk = si + (((dl)**2)/2) *N*sin(fi)*cos(fi)*(1+(((dl)**2)/12)*(cos(fi))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(cos(fi))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
+        ygk = dl*N*cos(fi) * (1+((dl**2)/6) * (cos(fi))**2 *(1-t**2+n2) + ((dl**4)/120) * (cos(fi))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
         x2000 = xgk*0.999923
-        y2000 = ygk*0.999923 + (np.rad2deg(L0)/3)*1000000 + 500000
+        y2000 = ygk*0.999923 + (rad2deg(L0)/3)*1000000 + 500000
         return(x2000,y2000)
-    def transformacja4(self,fi,la,L0):
+    
+    def transformacja5(self,fi,la):
         """
         Transformacja współrzędnych do układu 1992 - transformacja stosowana na potrzeby wykonania map w skalach większych
         od 1:10 000. Odwzorowanie oparte na na odwzorowaniu Gaussa-Krugera w jednej strefie. Początkiem układu jest przecięcie
-        południka 19 stE z obrazem równika.Prowadzi kolejno do wyznaczenia płaskich współrzędnych kartezjańsich (xgk,ygk) 
+        południka 19 stE z obrazem równika. Prowadzi kolejno do wyznaczenia płaskich współrzędnych kartezjańsich (xgk,ygk) 
         w oparciu o współrzędne geodezyjne(fi,la), a następnie w oparciu o skalę (m0 = 0.9993) do wzynaczenia współrzędnych 
         w układzie 1992.
 
         Parameters
         ----------
-        fi,la,L0 : FLOAT
+        fi,la : FLOAT
             Współrzędne geodezyjne
         
         Returns
@@ -154,66 +207,17 @@ class Transformacje:
         L0 = 19*pi/180
         b2 = (self.a**2)*(1-self.ecc2)
         e2 = (self.a**2 - b2)/b2
-        t = np.arctan(f)
-        n2 = e2 * ((np.cos(f))**2)
-        dl = l - L0
-        N = self.a / np.sqrt(1 - self.e2 * np.sin(fi)**2)
-        si = sigma(f,self.a,self.ecc2)
-        xgk = si + (((dl)**2)/2) *N*np.sin(f)*np.cos(f)*(1+(((dl)**2)/12)*(np.cos(f))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(np.cos(f))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
-        ygk = dl*N*np.cos(f) * (1+((dl**2)/6) * (np.cos(f))**2 *(1-t**2+n2) + ((dl**4)/120) * (np.cos(f))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
+        t = arctan(fi)
+        n2 = e2 * ((cos(fi))**2)
+        dl = la - L0
+        N = self.a / sqrt(1 - self.e2 * sin(fi)**2)
+        si = sigma(fi,self.a,self.ecc2)
+        xgk = si + (((dl)**2)/2) *N*sin(fi)*cos(fi)*(1+(((dl)**2)/12)*(cos(fi))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(cos(fi))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
+        ygk = dl*N*cos(fi) * (1+((dl**2)/6) * (cos(fi))**2 *(1-t**2+n2) + ((dl**4)/120) * (cos(fi))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
         x1992 = xgk*0.9993 - 5300000
         y1992 = ygk*0.9993 + 500000
         return(x1992,y1992)
-    def transformacja5(self,Xa,Ya,Za,Xb,Yb,Zb):
-        """
-        Transformacja współrzędnych kartezjańskich na parametry wektora przestrzennego w układzie
-        topocentrycznym.
-        Parameters
-        ----------
-        Xa,Ya,Za,Xb,Yb,Zb : FLOAT
-            początkowe(a) i końcowe(b) współrzędne kartezjańkie wektora przestrzennego
-        Returns
-        ----------
-        sab : FLOAT
-            [metry]
-        alfaab : FLOAT
-            [stopnie dziesiętne]
-        zab: FLOAT
-            [stopnie dziesiętne]
-        
-        
-        """
-        r = np.sqrt(Xa**2 + Ya**2) 
-        fi_a = np.arctan(Za/(r*(1 - self.e2))) 
-        while True:
-            N = self.a / sqrt(1 - self.e2 * sin(fi_a)**2)
-            h = (r/cos(fi_a)) - N
-            fp = fi_a
-            fi_a = np.arctan(Za/(r *(1-(self.e2*(N/(N+h))))))
-            if abs(fp-fi) < (0.000001/206265):
-                break 
-            la_a = atan2(Ya,Xa)
-        r = np.sqrt(Xb**2 + Yb**2) 
-        fi_b = np.arctan(Zb/(r*(1 - self.e2)))
-        while True:
-            N = self.a / sqrt(1 - self.e2 * sin(fi_b)**2)
-            h = (r/cos(fi_b)) - N
-            fp = fi_b
-            fi_b = np.arctan(Zb/(r *(1-(self.e2*(N/(N+h))))))
-            if abs(fp-fi_b) < (0.000001/206265):
-                break 
-            la_b = atan2(Yb,Xb)
-            R = np.array([[-np.sin(fi_a)*np.cos(la_a), -np.sin(la_a), np.cos(fi_a)*np.cos(la_a)], 
-                 [-np.sin(fi_a)*np.sin(la_a), np.cos(la_l), np.cos(fi_a)*np.sin(la_a)],
-                 [ np.cos(fi_a), 0, np.sin(fi_a)]])
-            dX = np.array([[Xb-Xa],
-                           [Yb-Ya],
-                           [Zb-Za]])
-            dneu = np.transpose(R)@dX
-            sab = np.sqrt(dneu[0]**2 + dneu[1]**2 + dneu[2]**2)
-            alfaab = np.arctan2(dxneu[1],dneu[0])
-            zab = np.arccos(dneu[2]/sab)
-            return(sab,degrees(alfaab),degrees(zab))
+   
         
 # Tutaj będą wywoływane funkcje oraz odczytywane i zapisywane pliki tekstowe:
 if __name__ == "__main__":
@@ -280,58 +284,8 @@ if __name__ == "__main__":
             plik.write('Wyniki przedstawione w formacie: [X, Y, Z] \n')
             for punkt in range(0, len(xyz)):
                 plik.write(f'{xyz[punkt]} \n')
-    
+                
     elif wybrana_transformacja == '3':
-         #Dane fi, la, L0 z pliku tekstowego
-        with open('input_flL0.txt', 'r') as plik:
-            wiersze = plik.readlines()
-            punkty = [] # [[f1, l1, L0], ..., [xn, yn, L0{15/18/21/24}]]
-            for i in range(0, len(wiersze)):
-                wspolrzedne_punkt = wiersze[i].split(',')
-                for flL0 in range(0, len(wspolrzedne_punkt)):
-                    wspolrzedne_punkt[flL0] = float(wspolrzedne_punkt[flL0])
-                punkty.append(wspolrzedne_punkt)
-                
-        # Przerzucenie wyników do listy xy2000
-        xy00 = []
-        for punkt in range(0,len(punkty)):
-            x2000, y2000, = geo.transformacja3(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
-            xy00.append([x2000,y2000])
-        
-        # Zapisanie wyników do pliku tekstowego
-        with open('output_xy2000.txt', 'w') as plik:
-            plik.write('Wyniki przedstawione w formacie: [x2000,y2000] \n')
-            for punkt in range(0, len(xy00)):
-                plik.write(f'{xy00[punkt]} \n')
-        
-       
-    
-    elif wybrana_transformacja == '4':
-         #Dane fi, la, L0 z pliku tekstowego
-        with open('input_flL019.txt', 'r') as plik:
-            wiersze = plik.readlines()
-            punkty = [] # [[f1, l1, L019], ..., [xn, yn, L0{19}]]
-            for i in range(0, len(wiersze)):
-                wspolrzedne_punkt = wiersze[i].split(',')
-                for flL019 in range(0, len(wspolrzedne_punkt)):
-                    wspolrzedne_punkt[flL019] = float(wspolrzedne_punkt[flL019])
-                punkty.append(wspolrzedne_punkt)
-                
-        # Przerzucenie wyników do listy xy1992
-        xy92 = []
-        for punkt in range(0,len(punkty)):
-            x1992, y1992, = geo.transformacja4(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
-            xy92.append([x1992,y1992])
-        
-        # Zapisanie wyników do pliku tekstowego
-        with open('output_xy1992.txt', 'w') as plik:
-            plik.write('Wyniki przedstawione w formacie: [x1992,y1992] \n')
-            for punkt in range(0, len(xy92)):
-                plik.write(f'{xy92[punkt]} \n')
-        
-        
-    
-    elif wybrana_transformacja == '5':
         with open('input_xyzab.txt', 'r') as plik:
             wiersze = plik.readlines()
             punkty = [] # [[X1a, Y1a, Z1a, X1b,Y1b,Z1b], ..., [Xna, Yna, Zna, Xnb, Ynb, Znb]]
@@ -344,7 +298,7 @@ if __name__ == "__main__":
         # Przerzucenie wyników do listy neu
         neu = []
         for punkt in range(0,len(punkty)):
-            sab, alfaab, zab = geo.transformacja1(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
+            sab, alfaab, zab = geo.transformacja3(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
             neu.append([sab,alfaab,zab])
         
         # Zapisanie wyników do pliku tekstowego
@@ -352,6 +306,58 @@ if __name__ == "__main__":
             plik.write('Wyniki przedstawione w formacie: [sab, alfaab, zab] \n')
             for punkt in range(0, len(neu)):
                 plik.write(f'{neu[punkt]} \n')
+    
+    elif wybrana_transformacja == '4':
+         #Dane fi, la, L0 z pliku tekstowego
+        with open('input_flL0.txt', 'r') as plik:
+            wiersze = plik.readlines()
+            punkty = [] # [[f1, l1, L0{15/18/21/24}], ..., [xn, yn, L0{15/18/21/24}]]
+            for i in range(0, len(wiersze)):
+                wspolrzedne_punkt = wiersze[i].split(',')
+                for flL0 in range(0, len(wspolrzedne_punkt)):
+                    wspolrzedne_punkt[flL0] = float(wspolrzedne_punkt[flL0])
+                punkty.append(wspolrzedne_punkt)
+                
+        # Przerzucenie wyników do listy xy2000
+        xy00 = []
+        for punkt in range(0,len(punkty)):
+            x2000, y2000 = geo.transformacja4(punkty[punkt][0], punkty[punkt][1], punkty[punkt][2])
+            xy00.append([x2000,y2000])
+        
+        # Zapisanie wyników do pliku tekstowego
+        with open('output_xy2000.txt', 'w') as plik:
+            plik.write('Wyniki przedstawione w formacie: [x2000,y2000] \n')
+            for punkt in range(0, len(xy00)):
+                plik.write(f'{xy00[punkt]} \n')
+        
+       
+    
+    elif wybrana_transformacja == '5':
+         #Dane fi, la, L0 z pliku tekstowego
+        with open('input_fl.txt', 'r') as plik:
+            wiersze = plik.readlines()
+            punkty = [] # [[f1, l1], ..., [xn, yn]]
+            for i in range(0, len(wiersze)):
+                wspolrzedne_punkt = wiersze[i].split(',')
+                for fl in range(0, len(wspolrzedne_punkt)):
+                    wspolrzedne_punkt[fl] = float(wspolrzedne_punkt[fl])
+                punkty.append(wspolrzedne_punkt)
+                
+        # Przerzucenie wyników do listy xy1992
+        xy92 = []
+        for punkt in range(0,len(punkty)):
+            x1992, y1992 = geo.transformacja5(punkty[punkt][0], punkty[punkt][1])
+            xy92.append([x1992,y1992])
+        
+        # Zapisanie wyników do pliku tekstowego
+        with open('output_xy1992.txt', 'w') as plik:
+            plik.write('Wyniki przedstawione w formacie: [x1992,y1992] \n')
+            for punkt in range(0, len(xy92)):
+                plik.write(f'{xy92[punkt]} \n')
+        
+        
+    
+    
                 
             
         
