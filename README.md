@@ -17,6 +17,8 @@
 
 4 Do wykonania obliczeń wykorzystywane są następujące funkcje z biblioteki 'math'
 	sqrt, sin, cos, atan, atan2, degrees, radians
+	oraz następujące funkcje z biblioteki 'numpy'
+	rad2deg, arctan2, arctan, array, transpose, arccos
 
 # Wymagania systemowe
 5 Program został przetestowany na systemie operacyjnym Windows 10 oraz 11 i na tej wersji działa poprawnie
@@ -26,17 +28,17 @@
 	| Nazwa pliku 		| Zawartość pliku 	| Transformacja 
 	| input_xyz.txt 	| X,Y,Z				| XYZ -> BLH 
 	| input_blh.txt 	| B,L,H				| BLH -> XYZ 
-	| input_xyz.txt		| X,Y,Z				| XYZ -> NEUp
-	| input_bl.txt		| B,L				| BL -> 2000 
-	| input_bl.txt		| B,L				| BL -> 1992 
+	| input_xyzab.txt	| Xa,Ya,Za,Xb,Yb,Zb	| XYZ -> NEUp
+	| input_flL0.txt	| f,l,L0			| BL -> 2000 
+	| input_fl.txt		| f,l 				| BL -> 1992 
 	
 7 Dane wyjściowe dla wybranej transformacji będą plikiem tekstowym o strukturze opisanej poniżej
 	| Nazwa pliku 		| Zawartość pliku 	| Transformacja 
 	| output_blh.txt 	| B,L,H				| XYZ -> BLH 
 	| output_xyz.txt 	| X,Y,Z				| BLH -> XYZ 
-	| output_naup.txt	| N,E,U,p			| XYZ -> NAUp
-	| output_2000.txt	| X,Y				| BL -> 2000 
-	| output_1992.txt	| X,Y				| BL -> 1992 
+	| output_neu.txt	| N,E,U,p			| XYZ -> NEUp
+	| output_xy2000.txt	| X,Y				| BL -> 2000 
+	| output_xy1992.txt	| X,Y				| BL -> 1992 
 	
 8 Lokalizacja danych wejściowych i wyjściowych jest katalogiem, w którym mamy zainstalowanego Pythona
 
