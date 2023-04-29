@@ -6,7 +6,7 @@ Created on Wed Apr 19 17:15:28 2023
 """
 
 from math import sqrt, sin, cos, tan, atan, atan2, degrees, radians, pi
-from numpy import rad2deg, arctan2, arctan, array, transpose, arccos
+from numpy import rad2deg, deg2rad, arctan2, arctan, array, transpose, arccos
 
 class Transformacje:
     def __init__(self, model: str = 'wgs84'):
@@ -15,7 +15,7 @@ class Transformacje:
             a - duża półoś elipsoidy - promień równikowy
             b - mała półoś elipsoidy - promień południkowy
             flat - spłaszczenie
-            e2 - mimośród^2
+            e2 - mimośród**2
         """
         if model == "wgs84":
             self.a = 6378137.0
@@ -156,21 +156,27 @@ class Transformacje:
             [metry] - druga współrzędna
         
         """
+        fi = radians(fi)
+        la = radians(la)
+        L0 = radians(L0)
         b2 = (self.a**2)*(1-self.e2)
-        ep2 = (self.a**2 - b2)/b2
+        ep2 = ((self.a**2)-(b2))/(b2)
         t = tan(fi)
-        n2 = ep2 * ((cos(fi))**2)
-        dl = la - L0
-        N = self.a/sqrt(1 - (self.e2*(sin(fi)**2)))
-        A0 = 1-(self.e2/4)-((3*self.e2**2)/64)-((5*self.e2**3)/256)
-        A2 = (3/8) * (self.e2 +((self.e2**2)/4) + ((15*(self.e2**3))/128))
-        A4 = (15/256) *(self.e2**2 +((3*(self.e2**3))/4))
-        A6 = (35*(self.e2**3))/3072
-        si = self.a*((A0*fi)-(A2*sin(2*fi))+(A4*sin(4*fi))-(A6*(6*fi)))
-        xgk = si + (((dl)**2)/2) *N*sin(fi)*cos(fi)*(1+(((dl)**2)/12)*(cos(fi))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(cos(fi))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
-        ygk = dl*N*cos(fi) * (1+((dl**2)/6) * (cos(fi))**2 *(1-t**2+n2) + ((dl**4)/120) * (cos(fi))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
-        x2000 = xgk*0.999923
-        y2000 = ygk*0.999923 + (rad2deg(L0)/3)*1000000 + 500000
+        n2 = ep2*((cos(fi))**2)
+        N = (self.a)/sqrt(1-self.e2*sin(fi)**2)
+        A0 = 1-(self.e2/4)-((3*(self.e2**2))/64)-((5*(self.e2**3))/256)
+        A2 = (3/8)*(self.e2+((self.e2**2)/4)+(15*(self.e2**3)/128))
+        A4 = (15/256)*((self.e2**2)+((3*(self.e2**3))/4))
+        A6 = (35*(self.e2**3))/3972;
+        
+        si = self.a *(A0*fi - A2*sin(2*fi) + A4*sin(4*fi) - A6*sin(6*fi))
+        dL = la - L0
+        
+        xgk = si + ((dL**2)/2)*N*sin(fi)*cos(fi)*(1+((dL**2)/12)*((cos(fi))**2)*(5-t**2+9*n2+4*(n2**2))+((dL**4)/360)*((cos(fi))**4)*(61-58*(t**2)+(t**2)+t**4+270*n2-330*n2*(t**2))) 
+        ygk = dL*N*cos(fi)*(1+((dL**2)/6)*((cos(fi))**2)*(1-(t**2)+n2)+((dL**4)/120)*((cos(fi))**4)*(5-18*(t**2)+(t**4)+12*n2-58*n2*(t**2)))
+        x2000=xgk*0.999923
+        y2000=ygk*0.999923+(L0*180/pi/3)*1000000+500000
+        
         return(x2000, y2000)
     
     def transformacja5(self, fi, la):
@@ -351,7 +357,7 @@ if __name__ == "__main__":
                 for punkt in range(0, len(xy92)):
                     plik.write(f'{xy92[punkt]} \n')
             
-        print('Wciśnij (1), aby wykonać kolejną transformację, \nwciśnij "2", aby przerwać')
+        print('Wciśnij (1), aby wykonać kolejną transformację, \nwciśnij (2), aby przerwać')
         oblicz = input()
     
     
