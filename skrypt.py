@@ -200,22 +200,26 @@ class Transformacje:
             [metry] - druga współrzędna
 
         """
+        fi = radians(fi)
+        la = radians(la)
+        L0 = radians(19)
         b2 = (self.a**2)*(1-self.e2)
-        ep2 = (self.a**2 - b2)/b2
+        ep2 = ((self.a**2)-(b2))/(b2)
         t = tan(fi)
-        n2 = ep2 * ((cos(fi))**2)
-        L0 = 19*pi/180
-        dl = la - L0
-        N = self.a/sqrt(1 - (self.e2*(sin(fi)**2)))
-        A0 = 1-(self.e2/4)-((3*self.e2**2)/64)-((5*self.e2**3)/256)
-        A2 = (3/8) * (self.e2 +((self.e2**2)/4) + ((15*(self.e2**3))/128))
-        A4 = (15/256) *(self.e2**2 +((3*(self.e2**3))/4))
-        A6 = (35*(self.e2**3))/3072
-        si = self.a*((A0*fi)-(A2*sin(2*fi))+(A4*sin(4*fi))-(A6*sin(6*fi)))
-        xgk = si + (((dl)**2)/2) *N*sin(fi)*cos(fi)*(1+(((dl)**2)/12)*(cos(fi))**2 * (5-t**2 +9*n2 +4*(n2)**2)+(((dl)**4)/360) *(cos(fi))**4 *(61-58*t**2 + t**4 + 270*n2 - 330* n2 *t**2))
-        ygk = dl*N*cos(fi) * (1+((dl**2)/6) * (cos(fi))**2 *(1-t**2+n2) + ((dl**4)/120) * (cos(fi))**4 * (5-18*t**2 +t**4 + 14*n2 - 58*n2*t**2))
-        x1992 = xgk*0.9993 - 5300000
-        y1992 = ygk*0.9993 + 500000
+        n2 = ep2*((cos(fi))**2)
+        N = (self.a)/sqrt(1-self.e2*sin(fi)**2)
+        A0 = 1-(self.e2/4)-((3*(self.e2**2))/64)-((5*(self.e2**3))/256)
+        A2 = (3/8)*(self.e2+((self.e2**2)/4)+(15*(self.e2**3)/128))
+        A4 = (15/256)*((self.e2**2)+((3*(self.e2**3))/4))
+        A6 = (35*(self.e2**3))/3972;
+        
+        si = self.a *(A0*fi - A2*sin(2*fi) + A4*sin(4*fi) - A6*sin(6*fi))
+        dL = la - L0
+        
+        xgk = si + ((dL**2)/2)*N*sin(fi)*cos(fi)*(1+((dL**2)/12)*((cos(fi))**2)*(5-t**2+9*n2+4*(n2**2))+((dL**4)/360)*((cos(fi))**4)*(61-58*(t**2)+(t**2)+t**4+270*n2-330*n2*(t**2))) 
+        ygk = dL*N*cos(fi)*(1+((dL**2)/6)*((cos(fi))**2)*(1-(t**2)+n2)+((dL**4)/120)*((cos(fi))**4)*(5-18*(t**2)+(t**4)+12*n2-58*n2*(t**2)))
+        x1992 = xgk*0.9993-5300000
+        y1992 = ygk*0.9993+500000
         return(x1992, y1992)
    
         
