@@ -6,7 +6,7 @@ Created on Wed Apr 19 17:15:28 2023
 """
 
 from math import sqrt, sin, cos, tan, atan, atan2, degrees, radians, pi
-from numpy import rad2deg, deg2rad, arctan2, arctan, array, transpose, arccos
+from numpy import arctan2, arctan, array, transpose, arccos
 
 class Transformacje:
     def __init__(self, model: str = 'wgs84'):
