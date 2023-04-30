@@ -63,7 +63,8 @@ class Transformacje:
                 if abs(fp-fi) < (0.000001/206265):
                     break 
             la = atan2(Y,X)
-            return degrees(fi), degrees(la), h
+            
+            return(round(degrees(fi),6), round(degrees(la),6), round(h,6))
         
     def transformacja2(self, fi, la, h):
         """
@@ -91,7 +92,7 @@ class Transformacje:
         X = (N+h)*cos(fi)*cos(la)
         Y = (N+h)*cos(fi)*sin(la)
         Z = (N*(1-self.e2)+h)*sin(fi)
-        return(X, Y, Z)
+        return(round(X,6), round(Y,6), round(Z,6))
     
     def transformacja3(self, Xa, Ya, Za, Xb, Yb, Zb):
         """
@@ -133,7 +134,7 @@ class Transformacje:
         sab = sqrt(dneu[0]**2 + dneu[1]**2 + dneu[2]**2)
         alfaab = arctan2(dneu[1],dneu[0])
         zab = arccos(dneu[2]/sab)
-        return(sab, degrees(alfaab), degrees(zab))
+        return(round(sab,6), round(degrees(alfaab),6), round(degrees(zab),6))
         
     def transformacja4(self, fi, la, L0):
         """
@@ -177,7 +178,7 @@ class Transformacje:
         x2000=xgk*0.999923
         y2000=ygk*0.999923+(L0*180/pi/3)*1000000+500000
         
-        return(x2000, y2000)
+        return(round(x2000,6), round(y2000,6))
     
     def transformacja5(self, fi, la):
         """
@@ -220,7 +221,7 @@ class Transformacje:
         ygk = dL*N*cos(fi)*(1+((dL**2)/6)*((cos(fi))**2)*(1-(t**2)+n2)+((dL**4)/120)*((cos(fi))**4)*(5-18*(t**2)+(t**4)+12*n2-58*n2*(t**2)))
         x1992 = xgk*0.9993-5300000
         y1992 = ygk*0.9993+500000
-        return(x1992, y1992)
+        return(round(x1992,6), round(y1992,6))
    
         
 # Tutaj będą wywoływane funkcje oraz odczytywane i zapisywane pliki tekstowe:
