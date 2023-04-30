@@ -36,13 +36,14 @@
 	| Nazwa pliku 		| Zawartość pliku 	| Transformacja 
 	| output_blh.txt 	| B,L,H				| XYZ -> BLH 
 	| output_xyz.txt 	| X,Y,Z				| BLH -> XYZ 
-	| output_neu.txt	| N,E,U,p			| XYZ -> NEUp
+	| output_neu.txt	| N,E,U				| XYZ -> NEUp
 	| output_xy2000.txt	| X,Y				| BL -> 2000 
 	| output_xy1992.txt	| X,Y				| BL -> 1992 
-	
-8 Lokalizacja danych wejściowych i wyjściowych jest katalogiem, w którym mamy zainstalowanego Pythona
 
-9 Przykład użycia
+8 Znakiem dziesiętnym jest kropka
+9 Lokalizacja danych wejściowych i wyjściowych jest katalogiem, w którym mamy zainstalowanego Pythona
+
+10 Przykład użycia
 	> Chcemy użyć programu do transformacji współrzędnych XYZ -> BLH
 	> Przygotowujemy plik tekstowy o nazwie input_xyz.txt 
 	> Sprawdzamy czy zawartość pliku zawiera współrzędne XYZ oddzielone przecinkami
@@ -54,11 +55,11 @@
 	> Plik tekstowy został utworzony w katalogu z zainstalowanym Pythonem
 
 # Znane błędy i nietypowe zachowania programu
-10 Struktura plików wyjściowych
+11 Struktura plików wyjściowych
 Program zapisuje pliki w formie list - tzn są widoczne nawiasy kwadratowe w plikach wynikowych. Jest to efektem iterowania po punktach, a nie po współrzędnych, w trakcie zapisywania pliku. 
 Zdecydowaliśmy się na takie uproszczenie, ze względu na estetykę kodu - wygląda schludniej, jest mniej tekstu i pętli. Drugim powodem była oszczędność czasu.
 
-11 Nazwa oraz ścieżka dostępu pliku wejściowego oraz wyjściowego
+12 Nazwa oraz ścieżka dostępu pliku wejściowego oraz wyjściowego
 Program odczytuje pliki tekstowe z katalogu z zainstalowanym Pythonem. Nie wpływa to w żaden sposób na wyniki obliczeń, 
 lecz idealnie byłoby, aby użytkownik mógł wpisać ścieżkę dostępu oraz nazwę pliku tesktowego, w którym przechowuje współrzędne. W tym przypadku, motywacją była jedynie oszczędność czasu.
 
