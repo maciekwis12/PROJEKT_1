@@ -18,7 +18,7 @@
 4 Do wykonania obliczeń wykorzystywane są następujące funkcje z biblioteki 'math'
 	sqrt, sin, cos, atan, atan2, degrees, radians
 	oraz następujące funkcje z biblioteki 'numpy'
-	rad2deg, arctan2, arctan, array, transpose, arccos
+	arctan2, arctan, array, transpose, arccos
 
 # Wymagania systemowe
 5 Program został przetestowany na systemie operacyjnym Windows 10 oraz 11 i na tej wersji działa poprawnie
@@ -58,7 +58,7 @@
 Program zapisuje pliki w formie list - tzn są widoczne nawiasy kwadratowe w plikach wynikowych. Jest to efektem iterowania po punktach, a nie po współrzędnych, w trakcie zapisywania pliku. 
 Zdecydowaliśmy się na takie uproszczenie, ze względu na estetykę kodu - wygląda schludniej, jest mniej tekstu i pętli. Drugim powodem była oszczędność czasu.
 
-11 Nazwa pliku wyjściowego oraz ścieżka dostępu
+11 Nazwa oraz ścieżka dostępu pliku wejściowego oraz wyjściowego
 Program odczytuje pliki tekstowe z katalogu z zainstalowanym Pythonem. Nie wpływa to w żaden sposób na wyniki obliczeń, 
 lecz idealnie byłoby, aby użytkownik mógł wpisać ścieżkę dostępu oraz nazwę pliku tesktowego, w którym przechowuje współrzędne. W tym przypadku, motywacją była jedynie oszczędność czasu.
 
