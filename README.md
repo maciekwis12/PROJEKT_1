@@ -43,7 +43,7 @@
 8 Znakiem dziesiętnym jest kropka
 9 Lokalizacja danych wejściowych i wyjściowych jest katalogiem, w którym mamy zainstalowanego Pythona
 
-10 Przykład użycia
+10 Przykłady użycia
 	XYZ -> BLH:
 	Nazwa pliku wejściowego: input_xyz.txt
 	Nazwa pliku wyjściowego: output_blh.txt
