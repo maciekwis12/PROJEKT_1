@@ -44,15 +44,35 @@
 9 Lokalizacja danych wejściowych i wyjściowych jest katalogiem, w którym mamy zainstalowanego Pythona
 
 10 Przykład użycia
-	> Chcemy użyć programu do transformacji współrzędnych XYZ -> BLH
-	> Przygotowujemy plik tekstowy o nazwie input_xyz.txt 
-	> Sprawdzamy czy zawartość pliku zawiera współrzędne XYZ oddzielone przecinkami
-	> Umieszczamy plik w katalogu z zainstalowanym Pythonem
-	> Uruchamiamy Command Line
-	> Wpisujemy: python "ścieżka do programu"
-	> Program przedstawi nam dostępne elipsoidy - należy wybrać jedną z nich zgodnie z wyświetlaną instrukcją
-	> Następnie program przedstawi nam dostępne transformacje - postępujemy tak jak w kroku powyżej
-	> Plik tekstowy został utworzony w katalogu z zainstalowanym Pythonem
+	XYZ -> BLH:
+	Nazwa pliku wejściowego: input_xyz.txt
+	Nazwa pliku wyjściowego: output_blh.txt
+	Format danych w pliku wejściowym postaci (X, Y, Z):
+	3731440.00, 1240560.00, 5005620.20
+
+	BLH -> XYZ:
+	Nazwa pliku wejściowego: input_blh.txt
+	Nazwa pliku wyjściowego: output_xyz.txt
+	Format danych w pliku wejściowym postaci (B, L, H):
+	52.034739718345755, 18.389978007504855, 555.5609521241859 
+
+	XYZ -> NEUp:
+	Nazwa pliku wejściowego: input_xyzab.txt
+	Nazwa pliku wyjściowego: output_neu.txt
+	Format danych w pliku wejściowym postaci (Xa, Ya, Za, Xb, Yb, Zb), gdzie a - punkt początkowy, b - punkt końcowy:
+	3731440.00, 1240560.00, 5005620.20, 0.0, 0.0, 0.0
+
+	BL -> 2000:
+	Nazwa pliku wejściowego: input_flL0.txt
+	Nazwa pliku wyjściowego: output_xy2000.txt
+	Format danych w pliku wejściowym postaci (f, l, L0):
+	52.1309, 21.0024, 21
+
+	BL -> 1992:
+	Nazwa pliku wejściowego: input_fl.txt
+	Nazwa pliku wyjściowego: output_xy1992.txt
+	Format danych w pliku wejściowym postaci (f, l):
+	52.1309, 21.0024
 
 # Znane błędy i nietypowe zachowania programu
 11 Struktura plików wyjściowych
